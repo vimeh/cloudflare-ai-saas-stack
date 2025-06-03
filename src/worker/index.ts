@@ -1,6 +1,15 @@
 import { Hono } from "hono";
+import { logger } from "hono/logger";
+import { postsRoute } from "@worker/routes/posts";
+
 const app = new Hono<{ Bindings: Env }>();
 
-app.get("/api/", (c) => c.json({ name: "Cloudflare" }));
+app.use("*", logger());
+
+const apiRoutes = app
+  .basePath("/api")
+  .get("/", (c) => c.text("Hello World"))
+  .route("/posts", postsRoute);
 
 export default app;
+export type ApiRoutes = typeof apiRoutes;
