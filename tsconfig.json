@@ -10,7 +10,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"@client/*": ["src/client/*"],
-			"@worker/*": ["src/server/*"]
+			"@worker/*": ["src/server/*"],
+			"@shared/*": ["src/shared/*"]
 		}
 	}
 }
