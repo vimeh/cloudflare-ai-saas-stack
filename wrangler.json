@@ -14,5 +14,13 @@
 	"upload_source_maps": true,
 	"assets": {
 		"not_found_handling": "single-page-application"
-	}
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "cloudflare-ai-saas-stack",
+			"database_id": "f31d3908-8f25-46c8-95ac-e95845705ff5",
+			"migrations_dir": "src/worker/db/migrations"
+		}
+	]
 }
