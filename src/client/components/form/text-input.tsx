@@ -17,7 +17,7 @@ export function TextInput({ label }: { label: string }) {
 				onChange={(e) => field.handleChange(e.target.value)}
 			/>
 			{!field.state.meta.isValid && (
-				<em>{field.state.meta.errors.join(",")}</em>
+				<em>{field.state.meta.errors.map((err) => err.message).join(",")}</em>
 			)}
 		</>
 	);
