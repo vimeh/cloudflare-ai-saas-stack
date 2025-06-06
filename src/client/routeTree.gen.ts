@@ -11,15 +11,30 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as RegisterImport } from './routes/register'
 import { Route as ProfileImport } from './routes/profile'
+import { Route as LoginImport } from './routes/login'
 import { Route as CreatePostImport } from './routes/create-post'
 import { Route as IndexImport } from './routes/index'
+import { Route as ApiAuthCallbackProviderImport } from './routes/api/auth/callback/$provider'
 
 // Create/Update Routes
+
+const RegisterRoute = RegisterImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const ProfileRoute = ProfileImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LoginRoute = LoginImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -32,6 +47,12 @@ const CreatePostRoute = CreatePostImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ApiAuthCallbackProviderRoute = ApiAuthCallbackProviderImport.update({
+  id: '/api/auth/callback/$provider',
+  path: '/api/auth/callback/$provider',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -53,11 +74,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatePostImport
       parentRoute: typeof rootRoute
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileImport
+      parentRoute: typeof rootRoute
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterImport
+      parentRoute: typeof rootRoute
+    }
+    '/api/auth/callback/$provider': {
+      id: '/api/auth/callback/$provider'
+      path: '/api/auth/callback/$provider'
+      fullPath: '/api/auth/callback/$provider'
+      preLoaderRoute: typeof ApiAuthCallbackProviderImport
       parentRoute: typeof rootRoute
     }
   }
@@ -68,41 +110,75 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create-post': typeof CreatePostRoute
+  '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/api/auth/callback/$provider': typeof ApiAuthCallbackProviderRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-post': typeof CreatePostRoute
+  '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/api/auth/callback/$provider': typeof ApiAuthCallbackProviderRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/create-post': typeof CreatePostRoute
+  '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
+  '/api/auth/callback/$provider': typeof ApiAuthCallbackProviderRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create-post' | '/profile'
+  fullPaths:
+    | '/'
+    | '/create-post'
+    | '/login'
+    | '/profile'
+    | '/register'
+    | '/api/auth/callback/$provider'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create-post' | '/profile'
-  id: '__root__' | '/' | '/create-post' | '/profile'
+  to:
+    | '/'
+    | '/create-post'
+    | '/login'
+    | '/profile'
+    | '/register'
+    | '/api/auth/callback/$provider'
+  id:
+    | '__root__'
+    | '/'
+    | '/create-post'
+    | '/login'
+    | '/profile'
+    | '/register'
+    | '/api/auth/callback/$provider'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreatePostRoute: typeof CreatePostRoute
+  LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
+  RegisterRoute: typeof RegisterRoute
+  ApiAuthCallbackProviderRoute: typeof ApiAuthCallbackProviderRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreatePostRoute: CreatePostRoute,
+  LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,
+  RegisterRoute: RegisterRoute,
+  ApiAuthCallbackProviderRoute: ApiAuthCallbackProviderRoute,
 }
 
 export const routeTree = rootRoute
@@ -117,7 +193,10 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/create-post",
-        "/profile"
+        "/login",
+        "/profile",
+        "/register",
+        "/api/auth/callback/$provider"
       ]
     },
     "/": {
@@ -126,8 +205,17 @@ export const routeTree = rootRoute
     "/create-post": {
       "filePath": "create-post.tsx"
     },
+    "/login": {
+      "filePath": "login.tsx"
+    },
     "/profile": {
       "filePath": "profile.tsx"
+    },
+    "/register": {
+      "filePath": "register.tsx"
+    },
+    "/api/auth/callback/$provider": {
+      "filePath": "api/auth/callback/$provider.tsx"
     }
   }
 }

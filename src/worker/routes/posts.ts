@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import { createPostSchema } from "@shared/types/post";
+import { createPostSchema } from "@shared/schema/post";
 import { db } from "@worker/db";
 import { postsTable } from "@worker/db/schema";
 import { insertPostSchema } from "@worker/db/schema/post";
