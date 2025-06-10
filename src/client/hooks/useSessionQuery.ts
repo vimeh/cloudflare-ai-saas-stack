@@ -8,7 +8,8 @@ export const useSessionQuery = () =>
 			const result = await authClient.getSession();
 			return result.data || null;
 		},
-		staleTime: 1000 * 60 * 5, // 5 minutes
+		staleTime: 1000 * 60 * 60, // 60 minutes
+		refetchOnWindowFocus: false,
 		retry: (failureCount, error) => {
 			// Don't retry on 401/403 errors
 			if (error && typeof error === "object" && "status" in error) {
