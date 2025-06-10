@@ -29,22 +29,33 @@ export function LoginForm({
 		},
 		validators: {
 			onSubmit: loginSchema,
-		},
-		onSubmit: async ({ value }) => {
-			await signIn.email(value, {
-				onSuccess: () => {
+			onSubmitAsync: async ({ value }) => {
+				try {
+					const result = await signIn.email(value);
+
+					if (result?.error) {
+						return {
+							form: result.error.message || "Login failed",
+						};
+					}
+
+					// Success! Handle the redirect hereAdd commentMore actions
 					queryClient.invalidateQueries({ queryKey: ["session"] });
-					// Redirect to the intended page or homeAdd commentMore actions
-					if (search?.redirect) {
+
+					if (search.redirect) {
 						window.location.href = search.redirect;
 					} else {
 						navigate({ to: "/" });
 					}
-				},
-				onError: (error) => {
-					console.error(error);
-				},
-			});
+
+					return undefined; // No errors
+				} catch (_error) {
+					// Fallback error handling for any unexpected errors
+					return {
+						form: "An unexpected error occurred during login",
+					};
+				}
+			},
 		},
 	});
 
@@ -119,6 +130,18 @@ export function LoginForm({
 								</form.AppField>
 							</div>
 							<form.AppForm>
+								<form.Subscribe selector={(state) => state.errorMap.onSubmit}>
+									{(formError) =>
+										formError &&
+										typeof formError === "object" &&
+										"form" in formError &&
+										typeof formError.form === "string" ? (
+											<div className="text-sm text-red-500 text-center mb-3">
+												{formError.form}
+											</div>
+										) : null
+									}
+								</form.Subscribe>
 								<form.SubmitButton
 									className="w-full"
 									loadingText="Logging in..."
