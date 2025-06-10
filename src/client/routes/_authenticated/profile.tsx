@@ -1,7 +1,7 @@
 import { useSessionQuery } from "@client/hooks/useSessionQuery";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/profile")({
+export const Route = createFileRoute("/_authenticated/profile")({
 	component: Profile,
 });
 

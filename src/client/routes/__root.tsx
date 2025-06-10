@@ -46,12 +46,16 @@ function NavBar() {
 				<Link to="/" className="[&.active]:font-bold">
 					Home
 				</Link>{" "}
-				<Link to="/profile" className="[&.active]:font-bold">
-					Profile
-				</Link>
-				<Link to="/create-post" className="[&.active]:font-bold">
-					Create Post
-				</Link>
+				{sessionData && user ? (
+					<>
+						<Link to="/profile" className="[&.active]:font-bold">
+							Profile
+						</Link>
+						<Link to="/create-post" className="[&.active]:font-bold">
+							Create Post
+						</Link>
+					</>
+				) : null}
 			</div>
 			<div>
 				{sessionData && user ? (

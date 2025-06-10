@@ -3,7 +3,7 @@ import { api } from "@client/lib/api";
 import { createPostSchema } from "@shared/schema/post";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/create-post")({
+export const Route = createFileRoute("/_authenticated/create-post")({
 	component: CreatePost,
 });
 

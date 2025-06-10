@@ -11,7 +11,7 @@ import { signIn } from "@client/lib/auth-client";
 import { cn } from "@client/lib/utils";
 import { loginSchema } from "@shared/schema/auth";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 
 export function LoginForm({
@@ -20,6 +20,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
+	const search = useSearch({ from: "/login" });
 
 	const form = useAppForm({
 		defaultValues: {
@@ -33,7 +34,12 @@ export function LoginForm({
 			await signIn.email(value, {
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: ["session"] });
-					navigate({ to: "/" });
+					// Redirect to the intended page or homeAdd commentMore actions
+					if (search?.redirect) {
+						window.location.href = search.redirect;
+					} else {
+						navigate({ to: "/" });
+					}
 				},
 				onError: (error) => {
 					console.error(error);
