@@ -1,4 +1,4 @@
-import { Button } from "@client/components/ui/button";
+import { useAppForm } from "@client/components/form";
 import {
 	Card,
 	CardContent,
@@ -6,43 +6,48 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@client/components/ui/card";
-import { Input } from "@client/components/ui/input";
-import { Label } from "@client/components/ui/label";
 import { signUp } from "@client/lib/auth-client";
 import { cn } from "@client/lib/utils";
+import { registerSchema } from "@shared/schema/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 
 export function RegisterForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
-	const [name, setName] = useState("");
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	const form = useAppForm({
+		defaultValues: {
+			name: "",
+			email: "",
+			password: "",
+			confirmPassword: "",
+		},
+		validators: {
+			onSubmit: registerSchema,
+		},
+		onSubmit: async ({ value }) => {
+			// Extract only the fields needed for signUp
+			const { name, email, password } = value;
 
-		if (password !== confirmPassword) {
-			alert("Passwords do not match");
-			return;
-		}
-
-		await signUp.email(
-			{ email, password, name },
-			{
-				onSuccess: () => {
-					navigate({ to: "/" });
+			await signUp.email(
+				{ name, email, password },
+				{
+					onSuccess: () => {
+						queryClient.invalidateQueries({ queryKey: ["session"] });
+						navigate({ to: "/" });
+					},
+					onError: (error) => {
+						console.error("Sign up error:", error);
+					},
 				},
-				onError: (error) => {
-					console.error("Sign up error:", error);
-				},
-			},
-		);
-	};
+			);
+		},
+	});
 
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -54,59 +59,63 @@ export function RegisterForm({
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form onSubmit={handleSubmit}>
-						<div className="grid gap-6">
-							<div className="grid gap-3">
-								<Label htmlFor="name">Name</Label>
-								<Input
-									id="name"
-									type="text"
-									placeholder="Your Name"
-									required
-									value={name}
-									onChange={(e) => setName(e.target.value)}
-								/>
-							</div>
-							<div className="grid gap-3">
-								<Label htmlFor="email">Email</Label>
-								<Input
-									id="email"
-									type="email"
-									placeholder="m@example.com"
-									required
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-								/>
-							</div>
-							<div className="grid gap-3">
-								<Label htmlFor="password">Password</Label>
-								<Input
-									id="password"
-									type="password"
-									required
-									value={password}
-									onChange={(e) => setPassword(e.target.value)}
-								/>
-							</div>
-							<div className="grid gap-3">
-								<Label htmlFor="confirmPassword">Confirm Password</Label>
-								<Input
-									id="confirmPassword"
-									type="password"
-									required
-									value={confirmPassword}
-									onChange={(e) => setConfirmPassword(e.target.value)}
-								/>
-							</div>
-							<Button type="submit" className="w-full">
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							form.handleSubmit();
+						}}
+						className="grid gap-6"
+					>
+						<div className="grid gap-3">
+							<form.AppField name="name">
+								{(field) => (
+									<field.TextInput
+										label="Name"
+										type="text"
+										placeholder="Your Name"
+									/>
+								)}
+							</form.AppField>
+						</div>
+						<div className="grid gap-3">
+							<form.AppField name="email">
+								{(field) => (
+									<field.TextInput
+										label="Email"
+										type="email"
+										placeholder="m@example.com"
+									/>
+								)}
+							</form.AppField>
+						</div>
+						<div className="grid gap-3">
+							<form.AppField name="password">
+								{(field) => (
+									<field.TextInput label="Password" type="password" />
+								)}
+							</form.AppField>
+						</div>
+						<div className="grid gap-3">
+							<form.AppField name="confirmPassword">
+								{(field) => (
+									<field.TextInput label="Confirm Password" type="password" />
+								)}
+							</form.AppField>
+						</div>
+						<form.AppForm>
+							<form.SubmitButton
+								className="w-full"
+								loadingText="Creating account..."
+							>
 								Create account
-							</Button>
-							<div className="text-center text-sm">
-								Already have an account?{" "}
-								<a href="/login" className="underline underline-offset-4">
-									Login
-								</a>
-							</div>
+							</form.SubmitButton>
+						</form.AppForm>
+						<div className="text-center text-sm">
+							Already have an account?{" "}
+							<Link to="/login" className="underline underline-offset-4">
+								Login
+							</Link>
 						</div>
 					</form>
 				</CardContent>

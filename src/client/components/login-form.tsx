@@ -1,3 +1,4 @@
+import { useAppForm } from "@client/components/form";
 import { Button } from "@client/components/ui/button";
 import {
 	Card,
@@ -6,30 +7,30 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@client/components/ui/card";
-import { Input } from "@client/components/ui/input";
-import { Label } from "@client/components/ui/label";
 import { signIn } from "@client/lib/auth-client";
 import { cn } from "@client/lib/utils";
+import { loginSchema } from "@shared/schema/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 
 export function LoginForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 
-	const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-
-		await signIn.email(
-			{ email, password },
-			{
+	const form = useAppForm({
+		defaultValues: {
+			email: "",
+			password: "",
+		},
+		validators: {
+			onSubmit: loginSchema,
+		},
+		onSubmit: async ({ value }) => {
+			await signIn.email(value, {
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: ["session"] });
 					navigate({ to: "/" });
@@ -37,9 +38,9 @@ export function LoginForm({
 				onError: (error) => {
 					console.error(error);
 				},
-			},
-		);
-	};
+			});
+		},
+	});
 
 	const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
@@ -62,12 +63,15 @@ export function LoginForm({
 					<div className="grid gap-6">
 						<div className="flex flex-col gap-4">
 							<Button
-								type="button"
 								variant="outline"
 								className="w-full"
 								onClick={handleGoogleLogin}
 							>
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									aria-label="Google logo"
+								>
 									<title>Google logo</title>
 									<path
 										d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
@@ -82,35 +86,40 @@ export function LoginForm({
 								Or continue with
 							</span>
 						</div>
-						<form onSubmit={handleEmailLogin}>
-							<div className="grid gap-6">
-								<div className="grid gap-3">
-									<Label htmlFor="email">Email</Label>
-									<Input
-										id="email"
-										type="email"
-										placeholder="m@example.com"
-										required
-										value={email}
-										onChange={(e) => setEmail(e.target.value)}
-									/>
-								</div>
-								<div className="grid gap-3">
-									<div className="flex items-center">
-										<Label htmlFor="password">Password</Label>
-									</div>
-									<Input
-										id="password"
-										type="password"
-										required
-										value={password}
-										onChange={(e) => setPassword(e.target.value)}
-									/>
-								</div>
-								<Button type="submit" className="w-full">
-									Login
-								</Button>
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								form.handleSubmit();
+							}}
+							className="grid gap-6"
+						>
+							<div className="grid gap-3">
+								<form.AppField name="email">
+									{(field) => (
+										<field.TextInput
+											label="Email"
+											type="email"
+											placeholder="m@example.com"
+										/>
+									)}
+								</form.AppField>
 							</div>
+							<div className="grid gap-3">
+								<form.AppField name="password">
+									{(field) => (
+										<field.TextInput label="Password" type="password" />
+									)}
+								</form.AppField>
+							</div>
+							<form.AppForm>
+								<form.SubmitButton
+									className="w-full"
+									loadingText="Logging in..."
+								>
+									Login
+								</form.SubmitButton>
+							</form.AppForm>
 						</form>
 						<div className="text-center text-sm">
 							Don&apos;t have an account?{" "}

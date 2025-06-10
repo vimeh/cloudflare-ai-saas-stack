@@ -2,7 +2,17 @@ import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
 import { useFieldContext } from "./index";
 
-export function TextInput({ label }: { label: string }) {
+interface TextInputProps {
+	label: string;
+	type?: string;
+	placeholder?: string;
+}
+
+export function TextInput({
+	label,
+	type = "text",
+	placeholder,
+}: TextInputProps) {
 	const field = useFieldContext<string>();
 	return (
 		<>
@@ -12,12 +22,17 @@ export function TextInput({ label }: { label: string }) {
 				name={field.name}
 				value={field.state.value}
 				onBlur={field.handleBlur}
-				placeholder={label}
-				type="text"
+				placeholder={placeholder || label}
+				type={type}
 				onChange={(e) => field.handleChange(e.target.value)}
 			/>
 			{!field.state.meta.isValid && (
-				<em>{field.state.meta.errors.map((err) => err.message).join(",")}</em>
+				<em className="text-sm text-red-500">
+					{field.state.meta.errors
+						?.filter((err) => err?.message)
+						.map((err) => err?.message)
+						.join(", ")}
+				</em>
 			)}
 		</>
 	);

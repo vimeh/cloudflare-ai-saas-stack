@@ -62,7 +62,9 @@ function CreatePost() {
 					}}
 				</form.Subscribe>
 				<form.AppForm>
-					<form.SubmitButton />
+					<form.SubmitButton loadingText="Creating post...">
+						Create Post
+					</form.SubmitButton>
 				</form.AppForm>
 			</form>
 		</div>
