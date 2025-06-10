@@ -10,6 +10,7 @@ import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
 import { signIn } from "@client/lib/auth-client";
 import { cn } from "@client/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -21,6 +22,7 @@ export function LoginForm({
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 
 	const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -29,6 +31,7 @@ export function LoginForm({
 			{ email, password },
 			{
 				onSuccess: () => {
+					queryClient.invalidateQueries({ queryKey: ["session"] });
 					navigate({ to: "/" });
 				},
 				onError: (error) => {
@@ -41,19 +44,9 @@ export function LoginForm({
 	const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
-		await signIn.social(
-			{
-				provider: "google",
-			},
-			{
-				onSuccess: () => {
-					navigate({ to: "/" });
-				},
-				onError: (error) => {
-					console.error(error);
-				},
-			},
-		);
+		await signIn.social({
+			provider: "google",
+		});
 	};
 
 	return (
