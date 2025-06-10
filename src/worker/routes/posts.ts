@@ -3,6 +3,7 @@ import { createPostSchema } from "@shared/schema/post";
 import { db } from "@worker/db";
 import { postsTable } from "@worker/db/schema";
 import { insertPostSchema } from "@worker/db/schema/post";
+import { requireAuth } from "@worker/middleware";
 import type { HonoContext } from "@worker/types/hono";
 import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
@@ -16,12 +17,14 @@ export const postsRoute = new Hono<HonoContext>()
 			.limit(10);
 		return c.json({ posts });
 	})
-	.post("/", zValidator("json", createPostSchema), async (c) => {
+	.post("/", requireAuth(), zValidator("json", createPostSchema), async (c) => {
+		const user = c.get("user");
 		const data = await c.req.json();
 
 		try {
 			const validatedData = insertPostSchema.parse({
 				...data,
+				userId: user?.id,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			});
@@ -52,7 +55,7 @@ export const postsRoute = new Hono<HonoContext>()
 		}
 		return c.json({ post });
 	})
-	.delete("/:id{[0-9]+}", async (c) => {
+	.delete("/:id{[0-9]+}", requireAuth(), async (c) => {
 		const id = Number.parseInt(c.req.param("id"));
 
 		const deletedPost = await db(c.env)

@@ -12,6 +12,7 @@ function CreatePost() {
 	const form = useAppForm({
 		defaultValues: {
 			title: "",
+			content: "",
 		},
 		validators: {
 			onSubmit: createPostSchema,
@@ -50,6 +51,9 @@ function CreatePost() {
 			>
 				<form.AppField name="title">
 					{(field) => <field.TextInput label="Title" />}
+				</form.AppField>
+				<form.AppField name="content">
+					{(field) => <field.TextAreaField label="Content" rows={6} />}
 				</form.AppField>
 				<form.Subscribe selector={(state) => [state.errorMap]}>
 					{([errorMap]) => {

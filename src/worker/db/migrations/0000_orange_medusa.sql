@@ -1,10 +1,14 @@
 CREATE TABLE `posts` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
+	`content` text NOT NULL,
+	`user_id` text NOT NULL,
 	`createdAt` integer NOT NULL,
-	`updatedAt` integer NOT NULL
+	`updatedAt` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE INDEX `idx_posts_user_id` ON `posts` (`user_id`);--> statement-breakpoint
 CREATE TABLE `account` (
 	`id` text PRIMARY KEY NOT NULL,
 	`account_id` text NOT NULL,
