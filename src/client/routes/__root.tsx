@@ -2,15 +2,22 @@ import { Button } from "@client/components/ui/button";
 import { useSessionQuery } from "@client/hooks/useSessionQuery";
 import { authClient } from "@client/lib/auth-client";
 import { useQueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import {
 	Link,
 	Outlet,
-	createRootRoute,
+	createRootRouteWithContext,
 	useRouter,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { useEffect } from "react";
+import { Toaster, toast } from "sonner";
 
-export const Route = createRootRoute({
+export interface RouterCtx {
+	queryClient: QueryClient;
+}
+
+export const Route = createRootRouteWithContext<RouterCtx>()({
 	component: Root,
 });
 
@@ -76,10 +83,25 @@ function NavBar() {
 }
 
 function Root() {
+	const router = useRouter();
+
+	useEffect(() => {
+		const params = new URLSearchParams(window.location.search);
+		const error = params.get("error");
+
+		if (error) {
+			toast.error(`Authentication failed: ${error}`);
+
+			// Clean up URL
+			router.navigate({ to: "/", replace: true });
+		}
+	}, [router]);
+
 	return (
 		<>
 			<NavBar />
 			<Outlet />
+			<Toaster position="top-right" />
 			<TanStackRouterDevtools />
 		</>
 	);

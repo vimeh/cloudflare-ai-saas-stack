@@ -28,7 +28,6 @@ export const auth = (env: Env) => {
 			google: {
 				clientId: env.GOOGLE_CLIENT_ID,
 				clientSecret: env.GOOGLE_CLIENT_SECRET,
-				redirectUri: `${env.BETTER_AUTH_URL}/api/auth/callback/google`,
 			},
 		},
 	});
