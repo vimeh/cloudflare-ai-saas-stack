@@ -64,6 +64,7 @@ export function LoginForm({
 
 		await signIn.social({
 			provider: "google",
+			callbackURL: search.redirect,
 		});
 	};
 

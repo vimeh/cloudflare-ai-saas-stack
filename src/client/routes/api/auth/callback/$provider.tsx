@@ -31,7 +31,7 @@ export const Route = createFileRoute("/api/auth/callback/$provider")({
 		await context.queryClient.invalidateQueries({ queryKey: ["session"] });
 
 		throw redirect({
-			to: "/",
+			to: targetUrl.pathname + targetUrl.search,
 			replace: true,
 		});
 	},
