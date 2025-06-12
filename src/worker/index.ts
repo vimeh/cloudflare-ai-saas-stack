@@ -1,5 +1,6 @@
 import { auth } from "@worker/auth";
 import { sessionMiddleware } from "@worker/middleware/session";
+import { aiRoute } from "@worker/routes/ai";
 import { authDemoRoute } from "@worker/routes/auth-demo";
 import { postsRoute } from "@worker/routes/posts";
 import type { HonoContext } from "@worker/types/hono";
@@ -15,6 +16,7 @@ const apiRoutes = app
 	.basePath("/api")
 	.get("/", (c) => c.text("Hello World"))
 	.route("/posts", postsRoute)
+	.route("/ai", aiRoute)
 	.route("/auth-demo", authDemoRoute)
 	.all("/auth/*", (c) => {
 		const authHandler = auth(c.env).handler;
