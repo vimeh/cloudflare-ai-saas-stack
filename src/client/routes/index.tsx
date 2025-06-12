@@ -6,11 +6,19 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@client/components/ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@client/components/ui/dialog";
 import { Skeleton } from "@client/components/ui/skeleton";
 import { useSessionQuery } from "@client/hooks/useSessionQuery";
 import { api } from "@client/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/")({
 	component: Index,
@@ -36,6 +44,8 @@ interface Post {
 
 function Index() {
 	const { data: session, isPending: sessionPending } = useSessionQuery();
+	const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const {
 		isPending: postsPending,
@@ -46,6 +56,11 @@ function Index() {
 		queryFn: getPosts,
 		enabled: !!session, // Only fetch posts if user is authenticated
 	});
+
+	const handlePostClick = (post: Post) => {
+		setSelectedPost(post);
+		setIsModalOpen(true);
+	};
 
 	// Show loading state while checking authentication
 	if (sessionPending) {
@@ -176,12 +191,18 @@ function Index() {
 						<div className="space-y-3">
 							{data?.posts && data.posts.length > 0 ? (
 								data.posts.map((post: Post) => (
-									<div key={post.id} className="p-3 border rounded-lg">
+									<button
+										key={post.id}
+										type="button"
+										className="w-full p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors text-left"
+										onClick={() => handlePostClick(post)}
+										aria-label={`View post: ${post.title}`}
+									>
 										<h3 className="font-medium">{post.title}</h3>
 										<p className="text-sm text-muted-foreground mt-1">
 											{new Date(post.createdAt).toLocaleDateString()}
 										</p>
-									</div>
+									</button>
 								))
 							) : (
 								<div className="text-center py-8">
@@ -208,6 +229,28 @@ function Index() {
 					</div>
 				)}
 			</CardContent>
+
+			{/* Post Detail Modal */}
+			<Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+				<DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+					<DialogHeader>
+						<DialogTitle>{selectedPost?.title}</DialogTitle>
+						<DialogDescription>
+							Created on{" "}
+							{selectedPost
+								? new Date(selectedPost.createdAt).toLocaleDateString()
+								: ""}
+						</DialogDescription>
+					</DialogHeader>
+					<div className="mt-4">
+						<div className="prose prose-sm max-w-none">
+							<p className="whitespace-pre-wrap text-sm leading-relaxed">
+								{selectedPost?.content}
+							</p>
+						</div>
+					</div>
+				</DialogContent>
+			</Dialog>
 		</Card>
 	);
 }
