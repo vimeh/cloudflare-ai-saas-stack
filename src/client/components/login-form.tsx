@@ -73,9 +73,7 @@ export function LoginForm({
 			<Card>
 				<CardHeader className="text-center">
 					<CardTitle className="text-xl">Welcome back</CardTitle>
-					<CardDescription>
-						Login with your Email or Google account
-					</CardDescription>
+					<CardDescription>Login with your Google account</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-6">
@@ -99,58 +97,66 @@ export function LoginForm({
 								Login with Google
 							</Button>
 						</div>
-						<div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-							<span className="bg-card text-muted-foreground relative z-10 px-2">
-								Or continue with
-							</span>
+						<div className="text-center text-sm text-muted-foreground mb-4">
+							<p>
+								Email/password login has been disabled for the demo to prevent
+								CPU timeout issues on Cloudflare Workers free plan.
+							</p>
 						</div>
-						<form
-							onSubmit={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								form.handleSubmit();
-							}}
-							className="grid gap-6"
-						>
-							<div className="grid gap-3">
-								<form.AppField name="email">
-									{(field) => (
-										<field.TextInput
-											label="Email"
-											type="email"
-											placeholder="m@example.com"
-										/>
-									)}
-								</form.AppField>
+						<div className="hidden">
+							<div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+								<span className="bg-card text-muted-foreground relative z-10 px-2">
+									Or continue with
+								</span>
 							</div>
-							<div className="grid gap-3">
-								<form.AppField name="password">
-									{(field) => (
-										<field.TextInput label="Password" type="password" />
-									)}
-								</form.AppField>
-							</div>
-							<form.AppForm>
-								<form.Subscribe selector={(state) => state.errorMap.onSubmit}>
-									{(formError) =>
-										formError &&
-										typeof formError === "object" &&
-										"form" in formError &&
-										typeof formError.form === "string" ? (
-											<div className="text-sm text-red-500 text-center mb-3">
-												{formError.form}
-											</div>
-										) : null
-									}
-								</form.Subscribe>
-								<form.SubmitButton
-									className="w-full"
-									loadingText="Logging in..."
-								>
-									Login
-								</form.SubmitButton>
-							</form.AppForm>
-						</form>
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									form.handleSubmit();
+								}}
+								className="grid gap-6"
+							>
+								<div className="grid gap-3">
+									<form.AppField name="email">
+										{(field) => (
+											<field.TextInput
+												label="Email"
+												type="email"
+												placeholder="m@example.com"
+											/>
+										)}
+									</form.AppField>
+								</div>
+								<div className="grid gap-3">
+									<form.AppField name="password">
+										{(field) => (
+											<field.TextInput label="Password" type="password" />
+										)}
+									</form.AppField>
+								</div>
+								<form.AppForm>
+									<form.Subscribe selector={(state) => state.errorMap.onSubmit}>
+										{(formError) =>
+											formError &&
+											typeof formError === "object" &&
+											"form" in formError &&
+											typeof formError.form === "string" ? (
+												<div className="text-sm text-red-500 text-center mb-3">
+													{formError.form}
+												</div>
+											) : null
+										}
+									</form.Subscribe>
+									<form.SubmitButton
+										className="w-full"
+										loadingText="Logging in..."
+									>
+										Login
+									</form.SubmitButton>
+								</form.AppForm>
+							</form>
+						</div>
 						<div className="text-center text-sm">
 							Don&apos;t have an account?{" "}
 							<Link to="/register" className="underline underline-offset-4">

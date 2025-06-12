@@ -163,10 +163,11 @@ src/
 
 ---
 
-> **⚠️ Note on Email/Password Auth on Cloudflare Free Plan**
+> **⚠️ Note on Authentication**
 >
-> Email/password signup or signin may intermittently fail with a `503 cpuExceeded` error when running on the Cloudflare Workers free plan. This is due to resource limitations and is a known issue with the `better-auth` package.
+> Email/password authentication has been disabled in this demo to prevent `503 cpuExceeded` errors on the Cloudflare Workers free plan. This is due to resource limitations with the `better-auth` package's password hashing operations.
 >
-> **Solution:**
-> - Upgrade to a paid Workers plan for higher CPU limits
-> - Or, use Social Login (Google, etc.) for reliable authentication
+> **For production use:**
+> - Upgrade to a paid Workers plan to enable email/password authentication
+> - Or continue using Social Login (Google, etc.) for reliable authentication
+> - Email/password authentication can be re-enabled by setting `emailAndPassword.enabled: true` in `src/worker/auth.ts`

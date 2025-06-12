@@ -22,7 +22,7 @@ export const auth = (env: Env) => {
 			sameSite: "lax",
 		},
 		emailAndPassword: {
-			enabled: true,
+			enabled: false,
 		},
 		socialProviders: {
 			google: {
