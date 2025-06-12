@@ -4,6 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
+**Package Management:**
+- Always use `bun` to install packages and run the app
+
 **Primary Development:**
 - `bun run dev` - Start development server with hot reload (React + Hono API)
 - `bun run build` - Build for production
@@ -37,6 +40,9 @@ This is a full-stack SaaS starter built for **Cloudflare Workers** with these ke
 - Sessions stored in Cloudflare D1 database
 - Protected routes use `_authenticated/` directory pattern
 - Auth middleware in `src/worker/middleware/`
+- **React Components**: Use `useSessionQuery` hook for auth
+- **Router/Loader**: Use `QueryClient` in TanStack Router Context for auth
+- **Hono API Routes**: Use `requireAuth()` middleware for protected endpoints
 
 ### Database Architecture
 - **Drizzle ORM** with **Cloudflare D1** (SQLite)
@@ -49,11 +55,12 @@ This is a full-stack SaaS starter built for **Cloudflare Workers** with these ke
 - Routes in `src/worker/routes/`
 - Middleware for authentication and session handling
 - Full TypeScript integration with client
+- Use **Hono RPC** with **TanStack React Query** for backend requests
 
 ### Frontend Architecture
 - **TanStack Router** with file-based routing in `src/client/routes/`
 - **TanStack Query** for server state management
-- **TanStack Form** with Zod validation
+- **TanStack Form** with Zod validation for all forms
 - **Shadcn/ui** components in `src/client/components/ui/`
 
 ## Code Standards
