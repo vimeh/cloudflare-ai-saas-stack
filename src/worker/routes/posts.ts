@@ -5,14 +5,20 @@ import { postsTable } from "@worker/db/schema";
 import { insertPostSchema } from "@worker/db/schema/post";
 import { requireAuth } from "@worker/middleware";
 import type { HonoContext } from "@worker/types/hono";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 
 export const postsRoute = new Hono<HonoContext>()
-	.get("/", async (c) => {
+	.get("/", requireAuth(), async (c) => {
+		const user = c.get("user");
+		if (!user) {
+			return c.json({ error: "Unauthorized" }, 401);
+		}
+
 		const posts = await db(c.env)
 			.select()
 			.from(postsTable)
+			.where(eq(postsTable.userId, user.id))
 			.orderBy(desc(postsTable.createdAt))
 			.limit(10);
 		return c.json({ posts });
@@ -43,12 +49,17 @@ export const postsRoute = new Hono<HonoContext>()
 			});
 		}
 	})
-	.get("/:id{[0-9]+}", async (c) => {
+	.get("/:id{[0-9]+}", requireAuth(), async (c) => {
+		const user = c.get("user");
+		if (!user) {
+			return c.json({ error: "Unauthorized" }, 401);
+		}
+
 		const id = Number.parseInt(c.req.param("id"));
 		const post = await db(c.env)
 			.select()
 			.from(postsTable)
-			.where(eq(postsTable.id, id))
+			.where(and(eq(postsTable.id, id), eq(postsTable.userId, user.id)))
 			.get();
 		if (!post) {
 			return c.notFound();
@@ -56,14 +67,28 @@ export const postsRoute = new Hono<HonoContext>()
 		return c.json({ post });
 	})
 	.delete("/:id{[0-9]+}", requireAuth(), async (c) => {
+		const user = c.get("user");
+		if (!user) {
+			return c.json({ error: "Unauthorized" }, 401);
+		}
+
 		const id = Number.parseInt(c.req.param("id"));
 
-		const deletedPost = await db(c.env)
-			.delete(postsTable)
-			.where(eq(postsTable.id, id))
+		// First check if the post exists and belongs to the user
+		const existingPost = await db(c.env)
+			.select()
+			.from(postsTable)
+			.where(and(eq(postsTable.id, id), eq(postsTable.userId, user.id)))
 			.get();
-		if (!deletedPost) {
+
+		if (!existingPost) {
 			return c.notFound();
 		}
+
+		// Delete the post
+		await db(c.env)
+			.delete(postsTable)
+			.where(and(eq(postsTable.id, id), eq(postsTable.userId, user.id)));
+
 		return c.json({ success: true });
 	});
