@@ -79,16 +79,41 @@ function Index() {
 	if (!session) {
 		return (
 			<Card className="w-[600px] m-auto">
-				<CardHeader>
-					<CardTitle>Welcome to Posts</CardTitle>
-					<CardDescription>
-						Please log in to see and create posts
-					</CardDescription>
+				<CardHeader className="text-center">
+					<CardTitle>Cloudflare AI SAAS Stack Demo</CardTitle>
+					<CardDescription>Hono + Vite + React on Cloudflare</CardDescription>
 				</CardHeader>
-				<CardContent className="text-center space-y-4">
-					<p className="text-muted-foreground">
-						You need to be logged in to view and manage your posts.
-					</p>
+				<CardContent className="text-center space-y-6">
+					<div className="space-y-4">
+						<h3 className="text-lg font-semibold">Features</h3>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+							<div className="flex items-center space-x-2">
+								<span>⚡️</span>
+								<span>Ultra-fast dev experience</span>
+							</div>
+							<div className="flex items-center space-x-2">
+								<span>🎯</span>
+								<span>Deploy to Cloudflare Workers</span>
+							</div>
+							<div className="flex items-center space-x-2">
+								<span>🔐</span>
+								<span>Authentication with Better Auth</span>
+							</div>
+							<div className="flex items-center space-x-2">
+								<span>🛡️</span>
+								<span>Type-safe validation with Zod</span>
+							</div>
+							<div className="flex items-center space-x-2">
+								<span>🗃️</span>
+								<span>Database - Drizzle + Cloudflare D1</span>
+							</div>
+							<div className="flex items-center space-x-2">
+								<span>🤖</span>
+								<span>AI integration with Vercel AI SDK</span>
+							</div>
+						</div>
+					</div>
+					<p className="text-muted-foreground">Login to try the demo</p>
 					<div className="space-x-2">
 						<Button asChild>
 							<Link to="/login">Log In</Link>

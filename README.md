@@ -9,6 +9,7 @@ A modern starter template for building AI SAAS applications on Cloudflare using:
 - **Better Auth** (authentication with Google OAuth & email/password)
 - **Zod** (schema validation)
 - **Cloudflare D1 Database and Workers** (serverless deployment)
+- **Vercel AI SDK** (AI integration with Cloudflare Worker AI binding)
 
 **Frontend:**
 
@@ -43,6 +44,7 @@ A modern starter template for building AI SAAS applications on Cloudflare using:
 - 🎨 Modern styling with Tailwind CSS and Shadcn
 - 🔧 Lightning-fast linting and formatting with Biome
 - 🚀 Seamless Cloudflare Workers integration with @cloudflare/vite-plugin
+- 🤖 AI integration using Vercel AI SDK with Cloudflare Worker AI binding
 
 ---
 
