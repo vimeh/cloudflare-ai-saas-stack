@@ -54,7 +54,7 @@ A modern starter template for building AI SAAS applications on Cloudflare using:
 ### 1. Create a new project using this starter kit
 
 ```bash
-pnpm create cloudflare@latest -- --template vijaynandwani/cloudflare-ai-saas-stack
+pnpm create cloudflare@latest --template=vijaynandwani/cloudflare-ai-saas-stack
 ```
 
 ### 2. Change directory and install dependencies
