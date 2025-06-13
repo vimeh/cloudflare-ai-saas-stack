@@ -12,7 +12,13 @@ export const postsRoute = new Hono<HonoContext>()
 	.get("/", requireAuth(), async (c) => {
 		const user = c.get("user");
 		if (!user) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json(
+				{
+					success: false,
+					error: { code: "UNAUTHORIZED", message: "Unauthorized" },
+				},
+				401,
+			);
 		}
 
 		const posts = await db(c.env)
@@ -25,70 +31,136 @@ export const postsRoute = new Hono<HonoContext>()
 	})
 	.post("/", requireAuth(), zValidator("json", createPostSchema), async (c) => {
 		const user = c.get("user");
-		const data = await c.req.json();
+		if (!user) {
+			return c.json(
+				{
+					success: false,
+					error: { code: "UNAUTHORIZED", message: "Unauthorized" },
+				},
+				401,
+			);
+		}
+		const data = c.req.valid("json");
 
 		try {
 			const validatedData = insertPostSchema.parse({
 				...data,
-				userId: user?.id,
+				userId: user.id,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			});
 
 			await db(c.env).insert(postsTable).values(validatedData);
-			c.status(201);
-			return c.json({ success: true, message: "Post created successfully" });
-		} catch (error) {
-			console.error("Error creating post:", error);
-
-			// Generic server error
-			c.status(500);
-			return c.json({
-				success: false,
-				error: { message: "Failed to create post. Please try again." },
-			});
+			return c.json(
+				{ success: true, message: "Post created successfully" },
+				201,
+			);
+		} catch (_error) {
+			return c.json(
+				{
+					success: false,
+					error: {
+						code: "INTERNAL_SERVER_ERROR",
+						message: "Failed to create post. Please try again.",
+					},
+				},
+				500,
+			);
 		}
 	})
 	.get("/:id{[0-9]+}", requireAuth(), async (c) => {
 		const user = c.get("user");
 		if (!user) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json(
+				{
+					success: false,
+					error: { code: "UNAUTHORIZED", message: "Unauthorized" },
+				},
+				401,
+			);
 		}
 
 		const id = Number.parseInt(c.req.param("id"));
+		if (Number.isNaN(id)) {
+			return c.json(
+				{
+					success: false,
+					error: { code: "INVALID_INPUT", message: "Invalid post ID format." },
+				},
+				400,
+			);
+		}
+
 		const post = await db(c.env)
 			.select()
 			.from(postsTable)
 			.where(and(eq(postsTable.id, id), eq(postsTable.userId, user.id)))
 			.get();
+
 		if (!post) {
-			return c.notFound();
+			return c.json(
+				{
+					success: false,
+					error: { code: "NOT_FOUND", message: "Post not found." },
+				},
+				404,
+			);
 		}
-		return c.json({ post });
+		return c.json({ success: true, data: post });
 	})
 	.delete("/:id{[0-9]+}", requireAuth(), async (c) => {
 		const user = c.get("user");
 		if (!user) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json(
+				{
+					success: false,
+					error: { code: "UNAUTHORIZED", message: "Unauthorized" },
+				},
+				401,
+			);
 		}
 
 		const id = Number.parseInt(c.req.param("id"));
-
-		// First check if the post exists and belongs to the user
-		const existingPost = await db(c.env)
-			.select()
-			.from(postsTable)
-			.where(and(eq(postsTable.id, id), eq(postsTable.userId, user.id)))
-			.get();
-
-		if (!existingPost) {
-			return c.notFound();
+		if (Number.isNaN(id)) {
+			return c.json(
+				{
+					success: false,
+					error: { code: "INVALID_INPUT", message: "Invalid post ID format." },
+				},
+				400,
+			);
 		}
 
-		// Delete the post
-		await db(c.env)
-			.delete(postsTable)
-			.where(and(eq(postsTable.id, id), eq(postsTable.userId, user.id)));
+		try {
+			const deletedPosts = await db(c.env)
+				.delete(postsTable)
+				.where(and(eq(postsTable.id, id), eq(postsTable.userId, user.id)))
+				.returning({ id: postsTable.id });
 
-		return c.json({ success: true });
+			if (deletedPosts.length === 0) {
+				return c.json(
+					{
+						success: false,
+						error: {
+							code: "NOT_FOUND",
+							message: "Post not found or not authorized to delete.",
+						},
+					},
+					404,
+				);
+			}
+
+			return c.json({ success: true, message: "Post deleted successfully." });
+		} catch (_error) {
+			return c.json(
+				{
+					success: false,
+					error: {
+						code: "INTERNAL_SERVER_ERROR",
+						message: "Failed to delete post. Please try again.",
+					},
+				},
+				500,
+			);
+		}
 	});

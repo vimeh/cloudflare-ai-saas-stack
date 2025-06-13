@@ -62,31 +62,40 @@ function CreatePost() {
 
 			if (!result.ok) {
 				const errorData = (await result.json()) as {
-					error?: string;
+					error?: { message?: string };
 					success: boolean;
 				};
-				throw new Error(errorData.error || "Failed to generate content");
+				throw new Error(
+					errorData.error?.message || "Failed to generate content",
+				);
 			}
 
-			const data = await result.json();
+			const data = (await result.json()) as {
+				success: boolean;
+				data?: { content: string };
+				error?: { message?: string };
+			};
 			return data;
 		},
 		onSuccess: (data) => {
-			if (data.content) {
-				form.setFieldValue("content", data.content);
+			if (data.success && data.data?.content) {
+				form.setFieldValue("content", data.data.content);
 				toast.success("AI content generated successfully!");
-			} else {
+			} else if (data.success && !data.data?.content) {
 				toast.info("AI generated empty content. Please try a different title.");
+			} else if (!data.success && data.error?.message) {
+				toast.error(data.error.message);
 			}
 		},
 		onError: (error) => {
-			toast.error(error.message || "Failed to generate content");
+			toast.error(
+				error.message ||
+					"An unexpected error occurred while generating content.",
+			);
 		},
 	});
 
 	useEffect(() => {
-		// Subscribe to form changes to track title for AI generation
-		// form.store.subscribe returns an unsubscribe function
 		const unsubscribe = form.store.subscribe(() => {
 			const currentTitle = form.getFieldValue("title");
 			setTitleValue(currentTitle || "");

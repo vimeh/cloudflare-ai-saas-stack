@@ -11,7 +11,7 @@ export const aiRoute = new Hono<HonoContext>().post(
 	requireAuth(),
 	zValidator("json", generateContentRequestSchema),
 	async (c) => {
-		const { title } = await c.req.json();
+		const { title } = c.req.valid("json");
 
 		try {
 			const workersai = createWorkersAI({ binding: c.env.AI });
@@ -23,15 +23,17 @@ export const aiRoute = new Hono<HonoContext>().post(
 			});
 
 			return c.json({
-				content: result.text,
 				success: true,
+				data: { content: result.text },
 			});
-		} catch (error) {
-			console.error("AI generation error:", error);
+		} catch (_error) {
 			return c.json(
 				{
-					error: "Failed to generate content. Please try again.",
 					success: false,
+					error: {
+						code: "INTERNAL_SERVER_ERROR",
+						message: "Failed to generate content. Please try again.",
+					},
 				},
 				500,
 			);

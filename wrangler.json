@@ -15,6 +15,9 @@
 	"assets": {
 		"not_found_handling": "single-page-application"
 	},
+	"vars": {
+		"ENVIRONMENT": "production"
+	},
 	"d1_databases": [
 		{
 			"binding": "DB",

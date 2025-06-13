@@ -17,8 +17,8 @@ export const auth = (env: Env) => {
 		baseUrl: env.BETTER_AUTH_URL,
 		trustedOrigins: [env.BETTER_AUTH_URL],
 		advanced: {
-			cookieDomain: env.BETTER_AUTH_URL,
-			useSecureCookies: process.env.NODE_ENV === "production",
+			cookieDomain: new URL(env.BETTER_AUTH_URL).hostname,
+			useSecureCookies: env.ENVIRONMENT === "production", // Ensure ENVIRONMENT is set in your Cloudflare worker env
 			sameSite: "lax",
 		},
 		emailAndPassword: {
