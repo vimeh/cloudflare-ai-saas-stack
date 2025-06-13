@@ -9,7 +9,6 @@ import {
 	createRootRouteWithContext,
 	useRouter,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
@@ -161,7 +160,6 @@ function Root() {
 				<Outlet />
 			</main>
 			<Toaster position="top-right" />
-			<TanStackRouterDevtools />
 		</div>
 	);
 }

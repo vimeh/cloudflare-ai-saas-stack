@@ -99,8 +99,8 @@ function Index() {
 					Cloudflare AI SAAS Stack Demo
 				</h1>
 				<p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-					Experience the power of Hono, Vite, and React, all running seamlessly
-					on Cloudflare Workers. Modern, fast, and scalable.
+					Full Stack boilerplate with Hono, Vite, and React, all running on
+					Cloudflare Workers. Modern, fast, and scalable.
 				</p>
 
 				<div className="mt-10">
@@ -109,10 +109,10 @@ function Index() {
 					</h3>
 					<div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
 						{[
-							{ icon: "⚡️", text: "Ultra-fast dev experience" },
-							{ icon: "🎯", text: "Deploy to Cloudflare Workers" },
+							{ icon: "⚡️", text: "Vite + React for the frontend" },
+							{ icon: "🛡️", text: "Type-safe API with Hono, Hono RPC and Zod" },
 							{ icon: "🔐", text: "Authentication with Better Auth" },
-							{ icon: "🛡️", text: "Type-safe validation with Zod" },
+							{ icon: "✨", text: "Tanstack Router, Query and Form" },
 							{ icon: "🗃️", text: "Database - Drizzle + Cloudflare D1" },
 							{ icon: "🤖", text: "AI integration with Vercel AI SDK" },
 						].map((feature) => (
