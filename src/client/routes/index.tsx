@@ -18,6 +18,7 @@ import { useSessionQuery } from "@client/hooks/useSessionQuery";
 import { api } from "@client/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { GithubIcon } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/")({
@@ -130,12 +131,25 @@ function Index() {
 
 				<div className="mt-12 space-y-4">
 					<p className="text-muted-foreground">Ready to explore?</p>
-					<div className="space-x-4">
-						<Button size="lg" asChild>
-							<Link to="/login">Log In</Link>
+					<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+						<Button size="lg" asChild className="w-full sm:w-auto">
+							<a
+								href="https://github.com/vijaynandwani/cloudflare-ai-saas-stack"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex items-center justify-center"
+							>
+								<GithubIcon className="mr-2 h-5 w-5" />
+								GitHub
+							</a>
 						</Button>
-						<Button size="lg" variant="outline" asChild>
-							<Link to="/register">Sign Up</Link>
+						<Button
+							size="lg"
+							variant="outline"
+							asChild
+							className="w-full sm:w-auto"
+						>
+							<Link to="/login">Log In</Link>
 						</Button>
 					</div>
 				</div>

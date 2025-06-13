@@ -10,7 +10,8 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { useEffect } from "react";
+import { MoonIcon, SunIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 
 export interface RouterCtx {
@@ -20,6 +21,48 @@ export interface RouterCtx {
 export const Route = createRootRouteWithContext<RouterCtx>()({
 	component: Root,
 });
+
+function ThemeToggle() {
+	const [theme, setTheme] = useState(() => {
+		if (typeof localStorage !== "undefined") {
+			const storedTheme = localStorage.getItem("theme");
+			if (storedTheme === "light" || storedTheme === "dark") {
+				return storedTheme;
+			}
+		}
+		// If no theme in localStorage, check system preference.
+		// If system prefers light, use light. Otherwise, default to dark.
+		if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+			return "light";
+		}
+		return "dark"; // Default to dark
+	});
+
+	useEffect(() => {
+		const root = window.document.documentElement;
+		if (theme === "dark") {
+			root.classList.add("dark");
+		} else {
+			root.classList.remove("dark");
+		}
+		localStorage.setItem("theme", theme);
+	}, [theme]);
+
+	const toggleTheme = () => {
+		setTheme(theme === "light" ? "dark" : "light");
+	};
+
+	return (
+		<Button variant="ghost" size="icon" onClick={toggleTheme}>
+			{theme === "light" ? (
+				<MoonIcon className="h-5 w-5" />
+			) : (
+				<SunIcon className="h-5 w-5" />
+			)}
+			<span className="sr-only">Toggle theme</span>
+		</Button>
+	);
+}
 
 function NavBar() {
 	const { data: sessionData } = useSessionQuery();
@@ -73,7 +116,7 @@ function NavBar() {
 					</>
 				) : null}
 			</div>
-			<div>
+			<div className="flex items-center gap-2">
 				{sessionData && user ? (
 					<div className="flex items-center gap-3">
 						<span className="text-sm text-muted-foreground">
@@ -90,6 +133,7 @@ function NavBar() {
 						</Button>
 					</Link>
 				)}
+				<ThemeToggle />
 			</div>
 		</nav>
 	);
