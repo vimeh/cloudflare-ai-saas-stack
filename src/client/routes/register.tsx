@@ -2,8 +2,8 @@ import { redirectIfAuthenticated } from "@client/lib/auth-utils";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/register")({
-	loader: async ({ context }) => {
-		await redirectIfAuthenticated(context.queryClient);
+	loader: async () => {
+		await redirectIfAuthenticated();
 		// Redirect to login since email/password registration is disabled for demo
 		throw redirect({
 			to: "/login",

@@ -1,23 +1,16 @@
 import { Button } from "@client/components/ui/button";
-import { useSessionQuery } from "@client/hooks/useSessionQuery";
-import { authClient } from "@client/lib/auth-client";
-import { useQueryClient } from "@tanstack/react-query";
-import type { QueryClient } from "@tanstack/react-query";
+import { authClient, useSession } from "@client/lib/auth-client";
 import {
 	Link,
 	Outlet,
-	createRootRouteWithContext,
+	createRootRoute,
 	useRouter,
 } from "@tanstack/react-router";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 
-export interface RouterCtx {
-	queryClient: QueryClient;
-}
-
-export const Route = createRootRouteWithContext<RouterCtx>()({
+export const Route = createRootRoute({
 	component: Root,
 });
 
@@ -64,25 +57,22 @@ function ThemeToggle() {
 }
 
 function NavBar() {
-	const { data: sessionData } = useSessionQuery();
+	const { data: sessionData, isPending } = useSession();
 	const user = sessionData?.user;
 	const router = useRouter();
-	const queryClient = useQueryClient();
 
 	const handleLogout = async () => {
 		try {
 			await authClient.signOut({
 				fetchOptions: {
 					onSuccess: () => {
-						queryClient.invalidateQueries({ queryKey: ["session"] });
 						router.navigate({ to: "/" });
 					},
 				},
 			});
 		} catch (error: unknown) {
 			console.error("Logout failed or error during signOut call:", error);
-			// Always invalidate session on logout attempt
-			queryClient.invalidateQueries({ queryKey: ["session"] });
+			// Navigate to home on logout attempt
 			if (router.state.location.pathname !== "/") {
 				router.navigate({ to: "/" });
 			}
@@ -98,7 +88,7 @@ function NavBar() {
 				>
 					MyApp
 				</Link>{" "}
-				{sessionData && user ? (
+				{!isPending && sessionData && user ? (
 					<>
 						<Link
 							to="/profile"
@@ -116,7 +106,7 @@ function NavBar() {
 				) : null}
 			</div>
 			<div className="flex items-center gap-2">
-				{sessionData && user ? (
+				{!isPending && sessionData && user ? (
 					<div className="flex items-center gap-3">
 						<span className="text-sm text-muted-foreground">
 							Hello, {user.name || user.email}

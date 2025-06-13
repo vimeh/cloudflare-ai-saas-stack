@@ -37,11 +37,11 @@ This is a full-stack SaaS starter built for **Cloudflare Workers** with these ke
 
 ### Authentication System
 - **Better Auth** with Google OAuth and email/password
-- Sessions stored in Cloudflare D1 database
+- Sessions stored in Cloudflare D1 database with 5-minute cookie caching
 - Protected routes use `_authenticated/` directory pattern
 - Auth middleware in `src/worker/middleware/`
-- **React Components**: Use `useSessionQuery` hook for auth
-- **Router/Loader**: Use `QueryClient` in TanStack Router Context for auth
+- **React Components**: Use native `useSession()` hook from better-auth
+- **Router/Loader**: Use Better Auth client directly in route loaders
 - **Hono API Routes**: Use `requireAuth()` middleware for protected endpoints
 
 ### Database Architecture
@@ -69,6 +69,7 @@ This is a full-stack SaaS starter built for **Cloudflare Workers** with these ke
 - Use **kebab-case** for all files (enforced by Biome)
 - React components end with `.tsx`
 - API routes follow REST conventions
+- **TanStack Router Dynamic Parameters**: Files like `$provider.tsx` use `$` as dynamic parameter placeholders (e.g., for OAuth providers) - do NOT rename to kebab-case
 
 ### Code Style (Biome)
 - Tab indentation (2 spaces)
@@ -84,13 +85,23 @@ This is a full-stack SaaS starter built for **Cloudflare Workers** with these ke
 
 ## Environment Setup
 
-**Required Environment Variables (.dev.vars for local):**
+**Required Environment Variables:**
+
+**Local Development (.dev.vars):**
 ```
+ENVIRONMENT="development"
 BETTER_AUTH_SECRET="random-secret-key"
 BETTER_AUTH_URL="http://localhost:5173"
 GOOGLE_CLIENT_ID="google-oauth-client-id"
 GOOGLE_CLIENT_SECRET="google-oauth-client-secret"
 ```
+
+**Production (wrangler.json vars or Cloudflare dashboard):**
+```
+ENVIRONMENT="production"
+```
+
+**Important:** `.dev.vars` takes precedence over `wrangler.json` vars during local development.
 
 ## Deployment Context
 

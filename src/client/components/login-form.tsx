@@ -10,7 +10,6 @@ import {
 import { signIn } from "@client/lib/auth-client";
 import { cn } from "@client/lib/utils";
 import { loginSchema } from "@shared/schema/auth";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, useSearch } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -19,7 +18,6 @@ export function LoginForm({
 	...props
 }: React.ComponentProps<"div">) {
 	const navigate = useNavigate();
-	const queryClient = useQueryClient();
 	const search = useSearch({ from: "/login" });
 
 	const form = useAppForm({
@@ -40,7 +38,6 @@ export function LoginForm({
 					}
 
 					// Success! Handle the redirect here
-					queryClient.invalidateQueries({ queryKey: ["session"] });
 
 					if (search.redirect) {
 						window.location.href = search.redirect;

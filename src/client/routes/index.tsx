@@ -14,7 +14,7 @@ import {
 	DialogTitle,
 } from "@client/components/ui/dialog";
 import { Skeleton } from "@client/components/ui/skeleton";
-import { useSessionQuery } from "@client/hooks/useSessionQuery";
+import { useSession } from "@client/lib/auth-client";
 import { api } from "@client/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -44,7 +44,7 @@ interface Post {
 }
 
 function Index() {
-	const { data: session, isPending: sessionPending } = useSessionQuery();
+	const { data: session, isPending: sessionPending } = useSession();
 	const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 

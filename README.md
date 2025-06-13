@@ -138,7 +138,6 @@ This will:
 src/
 ├── client/           # React frontend
 │   ├── components/   # UI components
-│   ├── hooks/        # Custom React hooks
 │   ├── routes/       # Tanstack Router routes
 │   └── lib/          # Client utilities
 ├── worker/           # Hono backend

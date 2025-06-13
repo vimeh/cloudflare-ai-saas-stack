@@ -6,7 +6,7 @@ import {
 	CardTitle,
 } from "@client/components/ui/card";
 import { Skeleton } from "@client/components/ui/skeleton";
-import { useSessionQuery } from "@client/hooks/useSessionQuery";
+import { useSession } from "@client/lib/auth-client";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/profile")({
@@ -26,7 +26,7 @@ function ProfileInfoItem({
 }
 
 function Profile() {
-	const { data: session, isLoading, error } = useSessionQuery();
+	const { data: session, isPending: isLoading, error } = useSession();
 
 	if (isLoading) {
 		return (

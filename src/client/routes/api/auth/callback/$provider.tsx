@@ -9,7 +9,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
  * https://github.com/cloudflare/workers-sdk/discussions/9143#discussioncomment-13315288
  */
 export const Route = createFileRoute("/api/auth/callback/$provider")({
-	loader: async ({ context }) => {
+	loader: async () => {
 		const res = await fetch(window.location.href, {
 			credentials: "include",
 		});
@@ -27,8 +27,6 @@ export const Route = createFileRoute("/api/auth/callback/$provider")({
 				replace: true,
 			});
 		}
-
-		await context.queryClient.invalidateQueries({ queryKey: ["session"] });
 
 		throw redirect({
 			to: targetUrl.pathname + targetUrl.search,

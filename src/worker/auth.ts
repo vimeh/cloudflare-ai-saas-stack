@@ -16,9 +16,17 @@ export const auth = (env: Env) => {
 		}),
 		baseUrl: env.BETTER_AUTH_URL,
 		trustedOrigins: [env.BETTER_AUTH_URL],
+		session: {
+			expiresIn: 60 * 60 * 24 * 7, // 7 days
+			updateAge: 60 * 60 * 24, // 1 day (session expiration is updated every day)
+			cookieCache: {
+				enabled: true, // Enable cookie caching to reduce database calls
+				maxAge: 5 * 60, // Cache for 5 minutes
+			},
+		},
 		advanced: {
 			cookieDomain: new URL(env.BETTER_AUTH_URL).hostname,
-			useSecureCookies: env.ENVIRONMENT === "production", // Ensure ENVIRONMENT is set in your Cloudflare worker env
+			useSecureCookies: env.ENVIRONMENT === "production",
 			sameSite: "lax",
 		},
 		emailAndPassword: {

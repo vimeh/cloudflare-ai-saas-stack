@@ -9,8 +9,8 @@ const loginSearchSchema = z.object({
 
 export const Route = createFileRoute("/login")({
 	validateSearch: loginSearchSchema,
-	loader: async ({ context }) => {
-		await redirectIfAuthenticated(context.queryClient);
+	loader: async () => {
+		await redirectIfAuthenticated();
 	},
 	component: RouteComponent,
 });

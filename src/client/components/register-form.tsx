@@ -9,7 +9,6 @@ import {
 import { signUp } from "@client/lib/auth-client";
 import { cn } from "@client/lib/utils";
 import { registerSchema } from "@shared/schema/auth";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -18,7 +17,6 @@ export function RegisterForm({
 	...props
 }: React.ComponentProps<"div">) {
 	const navigate = useNavigate();
-	const queryClient = useQueryClient();
 
 	const form = useAppForm({
 		defaultValues: {
@@ -42,7 +40,6 @@ export function RegisterForm({
 					}
 
 					// Success! Handle the redirect here
-					queryClient.invalidateQueries({ queryKey: ["session"] });
 					navigate({ to: "/" });
 
 					return undefined; // No errors
