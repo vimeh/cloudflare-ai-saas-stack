@@ -48,17 +48,26 @@ function NavBar() {
 	};
 
 	return (
-		<div className="p-2 flex items-center justify-between">
-			<div className="flex gap-2">
-				<Link to="/" className="[&.active]:font-bold">
-					Home
+		<nav className="px-4 py-3 flex items-center justify-between border-b">
+			<div className="flex items-center gap-4">
+				<Link
+					to="/"
+					className="text-lg font-medium text-foreground/80 hover:text-foreground [&.active]:text-primary [&.active]:font-semibold"
+				>
+					MyApp
 				</Link>{" "}
 				{sessionData && user ? (
 					<>
-						<Link to="/profile" className="[&.active]:font-bold">
+						<Link
+							to="/profile"
+							className="text-sm text-muted-foreground hover:text-foreground [&.active]:text-primary"
+						>
 							Profile
 						</Link>
-						<Link to="/create-post" className="[&.active]:font-bold">
+						<Link
+							to="/create-post"
+							className="text-sm text-muted-foreground hover:text-foreground [&.active]:text-primary"
+						>
 							Create Post
 						</Link>
 					</>
@@ -66,19 +75,23 @@ function NavBar() {
 			</div>
 			<div>
 				{sessionData && user ? (
-					<div className="flex items-center gap-2">
-						<span>Hello, {user.name || user.email}</span>
-						<Button variant="outline" onClick={handleLogout}>
+					<div className="flex items-center gap-3">
+						<span className="text-sm text-muted-foreground">
+							Hello, {user.name || user.email}
+						</span>
+						<Button variant="outline" size="sm" onClick={handleLogout}>
 							Logout
 						</Button>
 					</div>
 				) : (
 					<Link to="/login">
-						<Button variant="outline">Login</Button>
+						<Button variant="outline" size="sm">
+							Login
+						</Button>
 					</Link>
 				)}
 			</div>
-		</div>
+		</nav>
 	);
 }
 
@@ -98,11 +111,13 @@ function Root() {
 	}, [router]);
 
 	return (
-		<>
+		<div className="min-h-screen flex flex-col">
 			<NavBar />
-			<Outlet />
+			<main className="flex-grow p-4 md:p-6">
+				<Outlet />
+			</main>
 			<Toaster position="top-right" />
 			<TanStackRouterDevtools />
-		</>
+		</div>
 	);
 }

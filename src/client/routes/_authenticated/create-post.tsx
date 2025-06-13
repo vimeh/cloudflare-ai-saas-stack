@@ -1,8 +1,19 @@
 import { useAppForm } from "@client/components/form";
+import { Button } from "@client/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@client/components/ui/card";
+import { Label } from "@client/components/ui/label"; // Import Label
 import { api } from "@client/lib/api";
 import { createPostSchema } from "@shared/schema/post";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { SparklesIcon } from "lucide-react"; // Using lucide-react for icons
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -33,17 +44,16 @@ function CreatePost() {
 
 					toast.success("Post created successfully!");
 					navigate({ to: "/" });
-					return null;
+					return null; // Important: return null for success
 				} catch (_error) {
 					return {
-						form: "An unexpected error occurred while creating the post",
+						form: "An unexpected error occurred while creating the post.",
 					};
 				}
 			},
 		},
 	});
 
-	// AI content generation mutation
 	const generateContentMutation = useMutation({
 		mutationFn: async (title: string) => {
 			const result = await api.ai["generate-content"].$post({
@@ -51,7 +61,10 @@ function CreatePost() {
 			});
 
 			if (!result.ok) {
-				const errorData = await result.json() as { error?: string; success: boolean };
+				const errorData = (await result.json()) as {
+					error?: string;
+					success: boolean;
+				};
 				throw new Error(errorData.error || "Failed to generate content");
 			}
 
@@ -61,7 +74,9 @@ function CreatePost() {
 		onSuccess: (data) => {
 			if (data.content) {
 				form.setFieldValue("content", data.content);
-				toast.success("Content generated successfully!");
+				toast.success("AI content generated successfully!");
+			} else {
+				toast.info("AI generated empty content. Please try a different title.");
 			}
 		},
 		onError: (error) => {
@@ -69,86 +84,114 @@ function CreatePost() {
 		},
 	});
 
-	// Track title changes
 	useEffect(() => {
-		const subscription = form.store.subscribe(() => {
+		// Subscribe to form changes to track title for AI generation
+		// form.store.subscribe returns an unsubscribe function
+		const unsubscribe = form.store.subscribe(() => {
 			const currentTitle = form.getFieldValue("title");
 			setTitleValue(currentTitle || "");
 		});
-		return subscription;
+		return unsubscribe;
 	}, [form]);
 
-	// Handle AI generation trigger
 	const handleGenerateContent = () => {
 		const title = titleValue.trim();
 		if (!title) {
-			toast.error("Please enter a title first");
+			toast.error("Please enter a title first to generate content.");
 			return;
 		}
 		if (title.length < 5) {
-			toast.error("Title must be at least 5 characters long");
+			toast.error("Title must be at least 5 characters long.");
 			return;
 		}
 		generateContentMutation.mutate(title);
 	};
 
 	return (
-		<div className="p-2">
+		<div className="max-w-2xl mx-auto w-full">
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
 					form.handleSubmit();
 				}}
-				className="max-w-xl m-auto items-center gap-1.5 grid"
 			>
-				<form.AppField name="title">
-					{(field) => <field.TextInput label="Title" />}
-				</form.AppField>
-				<form.AppField name="content">
-					{(field) => (
-						<div className="space-y-2">
-							<div className="flex items-center justify-between">
-								<label htmlFor={field.name} className="text-sm font-medium">
-									Content
-								</label>
-								<button
-									type="button"
-									onClick={handleGenerateContent}
-									disabled={
-										generateContentMutation.isPending || titleValue.trim().length < 5
-									}
-									className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-1"
-								>
-									{generateContentMutation.isPending ? (
-										<>
-											<div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
-											Generating...
-										</>
-									) : (
-										"Generate with AI"
-									)}
-								</button>
-							</div>
-							<field.TextAreaField label="" rows={6} />
-						</div>
-					)}
-				</form.AppField>
-				<form.Subscribe selector={(state) => [state.errorMap]}>
-					{([errorMap]) => {
-						const formError = errorMap.onSubmit?.form;
-						return formError && typeof formError === "string" ? (
-							<div className="text-red-600 text-sm mt-2">
-								<em>Error: {formError}</em>
-							</div>
-						) : null;
-					}}
-				</form.Subscribe>
-				<form.AppForm>
-					<form.SubmitButton loadingText="Creating post...">
-						Create Post
-					</form.SubmitButton>
-				</form.AppForm>
+				<Card>
+					<CardHeader>
+						<CardTitle className="text-2xl">Create New Post</CardTitle>
+						<CardDescription>
+							Fill in the details below to create your new post. You can also
+							use AI to help generate content based on your title.
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-6">
+						<form.AppField name="title">
+							{(field) => (
+								<field.TextInput
+									label="Title"
+									placeholder="Enter a catchy title for your post"
+								/>
+							)}
+						</form.AppField>
+
+						<form.AppField name="content">
+							{(field) => (
+								<div className="space-y-2">
+									<div className="flex items-center justify-between">
+										<Label htmlFor={field.name}>Content</Label>
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={handleGenerateContent}
+											disabled={
+												generateContentMutation.isPending ||
+												titleValue.trim().length < 5
+											}
+										>
+											{generateContentMutation.isPending ? (
+												<>
+													<div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+													Generating...
+												</>
+											) : (
+												<>
+													<SparklesIcon className="mr-2 h-4 w-4" />
+													Generate with AI
+												</>
+											)}
+										</Button>
+									</div>
+									<field.TextAreaField
+										label="" // Pass empty label as visual label is separate
+										placeholder="Write your post content here, or generate it with AI..."
+										rows={10}
+										// id prop removed as it's not supported; component should use 'name' internally for id
+									/>
+								</div>
+							)}
+						</form.AppField>
+						<form.Subscribe selector={(state) => state.errorMap.onSubmit}>
+							{(formError) =>
+								formError && typeof formError.form === "string" ? (
+									<p className="text-sm text-destructive text-center">
+										{formError.form}
+									</p>
+								) : null
+							}
+						</form.Subscribe>
+					</CardContent>
+					<CardFooter>
+						<form.AppForm>
+							<form.SubmitButton
+								className="w-full"
+								loadingText="Creating Post..."
+							>
+								Create Post
+							</form.SubmitButton>
+						</form.AppForm>
+					</CardFooter>
+				</Card>
 			</form>
 		</div>
 	);
