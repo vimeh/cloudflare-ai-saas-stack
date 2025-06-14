@@ -1,6 +1,7 @@
 # Cloudflare AI SAAS Stack
 
-**Demo:** [Live Demo](https://hono-vite-react-cloudflare.vijaynandwani.workers.dev/)
+**Demo:** [Live Demo](https://cloudflare-ai-saas-stack.vijaynandwani.workers.dev/)
+
 A modern starter template for building AI SAAS applications on Cloudflare using:
 
 **Backend:**
@@ -133,7 +134,6 @@ This will:
 ---
 
 ## Project Structure
-
 ```
 src/
 ├── client/           # React frontend
