@@ -22,7 +22,7 @@
 		{
 			"binding": "DB",
 			"database_name": "cloudflare-ai-saas-stack",
-			"database_id": "f31d3908-8f25-46c8-95ac-e95845705ff5",
+			"database_id": "<YOUR-ID-HERE>",
 			"migrations_dir": "src/worker/db/migrations"
 		}
 	],
